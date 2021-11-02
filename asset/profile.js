@@ -30,9 +30,6 @@ function changeStep() {
   }
 }
 
-function triggerClick(e) {
-  document.querySelector("#profileImg").click();
-}
 function displayImage(e) {
   changeStep();
   if (e.files[0]) {
@@ -44,4 +41,30 @@ function displayImage(e) {
     };
     reader.readAsDataURL(e.files[0]);
   }
+}
+
+function onSubmit(event) {
+  let file = document.getElementById("profileImg").files[0];
+  if (file) {
+    let formData = new FormData();
+    formData.append("profileImg", file);
+
+    let ajax = new XMLHttpRequest();
+    ajax.open("POST", "upload.php", true);
+    ajax.send(formData);
+
+    ajax.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText);
+        document.getElementById("profileImg").value = null;
+        popupModal();
+        changeStep();
+        document
+          .getElementById("profileDisplay")
+          .setAttribute("src", "./asset/default.png");
+      }
+    };
+  }
+
+  return false;
 }
