@@ -1,8 +1,9 @@
 <?php
 $target_dir = "./asset/usr/";
-$target_file = $target_dir . basename($_FILES["profileImg"]["name"]);
+$basename = basename($_FILES["profileImg"]["name"]);
 $uploadOk = 1;
-$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+$imageFileType = strtolower(pathinfo($basename, PATHINFO_EXTENSION));
+$target_file = $target_dir . "username." . $imageFileType;
 
 if (isset($_POST["submit"])) {
     $check = getimagesize($_FILES["profileImg"]["tmp_name"]);
@@ -16,10 +17,10 @@ if (isset($_POST["submit"])) {
 }
 
 // Mengecek apakah file sudah ada 
-if (file_exists($target_file)) {
-    echo "Sorry, file already exists.";
-    $uploadOk = 0;
-}
+// if (file_exists($target_file)) {
+//     echo "Sorry, file already exists.";
+//     $uploadOk = 0;
+// }
 
 // Menggatur ukuran file maksimal yang dapat diterima
 if ($_FILES["profileImg"]["size"] > 500000) {
@@ -36,19 +37,18 @@ if (
     $uploadOk = 0;
 }
 
-//! FIXME still error in moving tmp file to target dir
-// NOTE try change dir permission, see if its work
-
 // Mengecek apakah niali $uploadOk sama dengan 0 
 // yang berarti error atau 1 yang berarti tidak ada error
 if ($uploadOk == 0) {
-    echo "Sorry, your file was not uploaded.";
     // jika semua ok, maka akan dicoba upload file
 } else {
-    var_dump(is_dir($target_dir) && is_writable($target_dir));
-    // if (move_uploaded_file($_FILES["profileImg"]["tmp_name"], $target_file)) {
-    //     echo "The file " . htmlspecialchars(basename($_FILES["profileImg"]["name"])) . " has been uploaded.";
-    // } else {
-    //     echo "Sorry, there was an error uploading your file.";
-    // }
+    if (is_dir($target_dir) === false) {
+        mkdir($target_dir);
+    }
+
+    if (move_uploaded_file($_FILES["profileImg"]["tmp_name"], $target_file)) {
+        echo "The file " . htmlspecialchars(basename($_FILES["profileImg"]["name"])) . " has been uploaded.";
+    } else {
+        echo "Sorry, there was an error uploading your file.";
+    }
 }
